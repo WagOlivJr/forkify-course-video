@@ -14,7 +14,7 @@ import { MODAL_CLOSE_SEC } from './config.js';
 
 const recipeContainer = document.querySelector('.recipe');
 
-if (module.hot) module.hot.accept();
+// if (module.hot) module.hot.accept();
 
 const controlRecipes = async function () {
   try {
@@ -95,33 +95,33 @@ const controlBookmarks = function () {
 };
 
 const controlAddRecipe = async function (newRecipe) {
+  function delay(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+  }
+
   try {
     // Show loading spinner
-    recipeView.renderSpinner();
+    addRecipeView.renderSpinner();
 
-    // Ipload the new recipe data
-    await model.uploadRecipe(newRecipe);
-    console.log(model.state.recipe);
+    // await delay(5000);
+
+    // Upload the new recipe data
+    model.uploadRecipe(newRecipe);
 
     // Render recipe
     recipeView.render(model.state.recipe);
 
-    // Success message
-    addRecipeView.renderMessage();
+    // Success message and conclude:
+    addRecipeView.concludeUpload(MODAL_CLOSE_SEC * 1000);
 
-    // Render bookmarView
+    // Render bookmarkView
     bookmarksView.render(model.state.bookmarks);
 
     // Change ID in url
     window.history.pushState(null, '', `#${model.state.recipe.id}`);
-
-    // Close form window
-    setTimeout(function () {
-      addRecipeView.toggleWindow();
-    }, MODAL_CLOSE_SEC * 1000);
   } catch (err) {
     console.error(err);
-    addRecipeView.renderError(err.message);
+    // addRecipeView.renderError(err.message);
   }
 };
 
@@ -130,8 +130,8 @@ const newFeature = function () {
 };
 
 const init = function () {
-  recipeView.addHandlerRander(controlBookmarks);
-  recipeView.addHandlerRander(controlRecipes);
+  bookmarksView.addHandlerRender(controlBookmarks);
+  recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerAddBookmark(controlAddBookmarks);
   searchView.addHandlerSearch(controlSearchResults);
